@@ -1,0 +1,19 @@
+Develop  a general  algorithm for planing query execution.
+
+We start with  a query in OUR  datalog-like language, where indexes are indicated. 
+One idea is to fix as indexes  terms involved in joins, since this can contribute to the reduction of the communication steps. 
+
+Let us consider the query
+$Q([x], sum(y)) \leftarrow A(x, [z]), B([z], y)$
+to be executed. We suppose that relations A and B are distributed in 4 processors.
+
+We propose general algorithms for constructing datalog query plans... according to the indexes "positions". 
+
+We extend our first propositions to queries containing intentional predicates and we consider recursive queries.
+
+
+
+
+\begin{itemize}
+\item  
+\end{itemize}

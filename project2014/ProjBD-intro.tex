@@ -1,0 +1,19 @@
+
+
+Nowadays, large volumes of graph-structure data are widespread  in many different domains such as social network, scientific computing, telecoms network, linked open data, organization management, finance chains and so on (\cite{Poul13}).
+
+As discussed in \cite{Poul13}, graph-structured data differs from ordinary big data in its deeper focus on relationships between  concepts or entities.
+ Relationships are as important as entities, and we need not only to  model attributes or constraints on them but also to easy query and analysis over them.
+ 
+ In this project we consider a data graph distributed in many different machines.
+ One machine contains the specification of this graph (schema + constraints).
+ 
+ Our goals are:
+ 
+ \begin{enumerate}
+ \item Choose and extend a schema language (possibly including some constraints)
+ \item Use a resolver to infer new constraints; test consistency.
+ \item Propose a user-friendly query language over the data graph. First step:  a datalog-like language. 
+ \item Consider fragmentation/distribution according to usual queries.
+ \item Propose  query execution plans for efficient query evaluation.
+ \end{enumerate}

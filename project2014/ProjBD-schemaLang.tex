@@ -1,0 +1,443 @@
+
+The graph schema is described by using a descriptive logic  (DL), to be translated into RDFS or OWL for implementation.
+In our context, the schema is a Tbox (description of concepts, relationships and some kinds of constraints).
+The Abox is the graph, basically described by concepts and relationships.
+Tbox is not distributed while Abox is.
+
+We start by considering the \dl\ fragment.
+
+
+\subsection{\dl}
+
+   The family of \dl\ has been designed for capturing the main modelling primitives of conceptual data model such as E-R or UML while remaining  tractable in the presence of
+inclusion statements and a certain form of negation (\cite{AMRRS12}).
+
+\begin{itemize}
+\item The constructs allowed in \dl\ are unqualified existential restrictions on roles ($\exists R$)  and on inverse roles ($\exists R^{-}$) and the negation.
+\item The axioms allowed in a Tbox of \dl\ are concept inclusion statements of the form $B \sqsubseteq C $  or  $B \sqsubseteq \neg C $ where $B$ and $C$ are atomic concepts
+or existential  restriction ($\exists R$ or $\exists R^{-}$).
+\item Negation is only allowed in the right-hand side of inclusions.
+\item We have 2 types of inclusion:  negative inclusion (NI) and positive inclusion (PI).
+\item A \dl\ schema may contain axioms corresponding to those proposed in RDFS. Besides it may contain other axioms of three kinds:
+PI, NI and key constraints which are not expressible in RDFS (see OWL, so).
+
+
+\item There are two dialects of \dl\, namely : 
+
+\begin{itemize}
+\item A \dlr: Tbox allows role inclusion statements $P \sqsubseteq Q $  or  $P \sqsubseteq \neg Q$ where $P$ and $Q$ are atomic  roles or inverse atomic roles. Thus it is obtained
+by extending axioms of RDFS with PI and NI.
+\item A \dlf:  Tbox allows functionality statements on roles of the form $funct P$ of $funct P^-$. To express keys.
+Thus it is obtained by extending axioms of RDFS with key constraints, PI and NI, but \textit{excluding inclusion between properties}. Due to this exclusion, RDFS is not included in \dlf.
+\end{itemize}
+
+\item Remark: Why not simply extend RDFS with three kinds of axioms? Because functional constraints interact with inclusion constraints in intricate way.
+
+\item Two fundamental differences between query answering in the context of RDFS and \dl\ knowledge bases:
+\begin{itemize}
+\item Inconsistency:  RDFS does not permit negation, but \dl\ allows some kind of negation - so, testing consistency is important.
+\item Incompleteness: RDFS rules are safe (allowing the simple bottom-up algorithm to answer queries). However axioms in \dl\ may correspond to unsafe rules (cf. blanc nodes). We have to use top-down approach for evaluating queries !!!! 
+\end{itemize}
+
+\item Due to all these remarks... We start by using \dlr
+\end{itemize}
+
+\subsection{Schema}
+
+The schema describes a graph. For defining a schema as a DL knowledge base we need:
+
+\begin{itemize}
+\item  A vocabulary composed of a set  \textbf{C} of atomic concepts $A, B, \dots$,
+a set \textbf{R} of atomic roles $P, Q, R, \dots$ and a set of atomic individuals $a, b, c \dots$.
+
+
+\item A set of constructs  used for building  tuples, complex concepts and roles  from atomic individuals, concepts and roles.
+\item A language of axioms that can be stated for constraining  the vocabulary  in order to express domain constraints.
+
+\item Atomic individuals are all names used to denote
+singular entities (be they persons, objects or anything else) in our
+domain of interest. 
+
+\item If $a_1, \dots, a_n$ are atomic individuals, then $\tuple{a_1, \dots, a_n} $ is a n-ary individual tuple. In this document we only deal with binary tuples.
+
+\item A language of axioms 
+that can be stated for constraining the vocabulary in order to
+express domain constraint.
+
+\end{itemize}
+
+
+
+\begin{definition}[\dlm\ Syntax] 
+Let $A \in$   \textbf{C} be an atomic concept name, 
+$P \in $ \textbf{C} be an atomic role and $P^-$ the inverse of  $P$.
+In  the abstract syntax:
+
+\begin{center}
+\begin{tabular}{lcl}
+$ B :: =  A \mid \exists R$ 	&\hspace{1cm}		&$ R ::= P \mid P^-$\\
+$C ::= B \mid \neg B$ 		& 							&$ E ::= R \mid \neg R$ \\
+\end{tabular}
+\end{center}
+
+\noindent
+ $B$ denotes a \textit{basic concept}, \ie,  an atomic concept or a concept of 
+ the form $\exists R$ and $R$ denotes a \textit{basic role}, \ie, a role that is either an 
+ atomic role or the inverse of an atomic role. 
+  Finally, $C$ denotes a \textit{}(general) concept, which can be a basic concept or its negation, 
+  whereas $E$ denotes a \textit{(general) role}, which can be a basic role or its negation.
+
+\end{definition}
+
+A \dlm\ knowledge base ($\K = (\T,\A)$)  has two components: a TBox $\T$, used to represent intensional knowledge, and a ABox $\A$, used
+to represent  extensional knowledge.
+A \dlm\ TBox is formed by a finite set of inclusion assertions of the forms:
+
+\centerline{$ B \sqsubseteq C$ or $ R \sqsubseteq E$.}
+ 
+Thus, 
+ we allow general concepts or roles to occur on the right-hand side of inclusion assertions, whereas only basic concepts or roles may occur on the left-hand side of inclusion assertions.
+ 
+ The following table gives the semantics of \dlm\ in terms of first order logic (FOL) formulas.
+ \dlm\  has an expression power equivalent to \textsc{DL-lite}$_{A}$ (described in \cite{CDLLR06c}) without value-domains and functionality assertion.
+As \textsc{DL-lite}$_{A}$, \dlm\ allows the use of concept and role attributes, but uses a different syntax.
+ In other words, we use \dlr\ to which we add concept and role attributes, expressed via special roles and binary tuples, to obtain \dlm.
+ This allows for  LOGSPACE query answering.
+
+
+\small
+\begin{longtable}{| p{2cm} | p{8.2cm} | p{5.2cm} |}
+%\begin{longtable}{| p{3.5cm} | p{9.2cm} |p{1cm}|}
+	\hline
+	\centering \textbf{\dlm} & \centering \textbf{FOL} & \centering \textbf{Datalog$_0^{\pm}$}
+	\\
+	\endfirsthead
+	\hline	
+	\centering \textbf{\dlm} & \centering \textbf{FOL} & %\centering \textbf{RDFS/OWL}
+	\\
+	\endhead
+	
+	\hline
+		$i:A$ or $A(i)$
+		&
+		$A(i)$
+		&
+	%	$<$ \texttt{i rdf:type A} $>$
+	$p_A(c_i)$
+	\\
+		
+	\hline
+		$i P j$ or $P(i,j)$
+		&
+		$P(i,j)$
+		&
+	%	$<$\texttt{ i P j }$>$
+	$p(c_i, c_j)$
+	\\
+	
+	\hline
+		%\cellcolor[gray]{0.9} 
+		$[i,j] P k$ or $P([i,j],k)$
+		&
+		%\cellcolor[gray]{0.9} 
+		$P(\pair{i,j},k)$
+		&
+		%\cellcolor[gray]{0.9} 
+%		$<$\texttt{ [i,j] P k}$>$
+      $p(c_i, c_j, c_k)$
+	\\
+	
+	\hline
+		$A_1 \sqsubseteq A_2$	
+		&
+		$\forall X.(A_1(X) \Rightarrow A_2(X))$
+		&
+%%		$<$\texttt{ $A_1$ rdfs:subClassOf $A_2$ }$>$
+$p_{A_1}(X) \rightarrow p_{A_2}(X)$
+	\\
+
+	\hline
+		%\cellcolor[gray]{0.9} 
+		$P \sqsubseteq P_2$	
+		&
+		%\cellcolor[gray]{0.9} 
+		$\forall X Y. (P_1(X,Y) \Rightarrow P_2(X,Y))$ or \newline
+		$\forall X Y Z. (P_1(\pair{X,Y},Z) \Rightarrow P_2(\pair{X,Y},Z))$
+		&
+		%\cellcolor[gray]{0.9} 
+%%		$<$\texttt{ $P_1$ rdfs:subPropertyOf $P_2$}$>$
+      $p_1(X,Y) \rightarrow p_2 (X,Y)$   or   $p_1(X,Y,Z) \rightarrow p_2 (X,Y, Z)$
+	\\
+
+	\hline
+		$\exists P \sqsubseteq A$	
+		&
+		$\forall X Y. (P(X,Y) \Rightarrow A(X))$
+		&
+%%		$<$\texttt{ P rdfs:domain A }$>$
+$p(X,Y) \rightarrow p_A (X)$  
+	\\
+
+	\hline
+		%\cellcolor[gray]{0.9} 
+		$\exists P^{-} \sqsubseteq A$	
+		&
+		%\cellcolor[gray]{0.9} 
+		$\forall X Y. (P(X,Y) \Rightarrow A(Y))$ or \newline
+		$\forall X Y Z. (P(\pair{X,Y},Z) \Rightarrow A(Z))$
+		&
+		%\cellcolor[gray]{0.9} 
+%%		$<$\texttt{ P rdfs:range A }$>$
+$p(X,Y) \rightarrow p_A (Y)$   or   $p(X,Y,Z) \rightarrow p_A (Z)$
+	\\
+	
+	\hline
+		%\cellcolor[gray]{0.7} 
+		$\exists P_1 \sqsubseteq P_2$
+		&
+		%\cellcolor[gray]{0.7} 
+		$\forall X Y Z. (P_1(\pair{X,Y},Z) \Rightarrow P_2(X,Y))$
+		&
+		%\cellcolor[gray]{0.7} 
+	%%	$<$\texttt{ $P_1$ rdfs:domain $P_2$ }$>$*
+	$p_1(X,Y, Z) \rightarrow p_2 (X,Y)$  
+	\\
+
+	\hline
+		Positive inclusions & &
+	\\
+	
+	\hline
+		$A \sqsubseteq \exists P$		
+		&
+		$\forall X.(A(X) \Rightarrow \exists Y. P(X,Y)) $
+		&
+%%		if $<$\texttt{ i rdf:type A }$>$ \newline
+%%		then $<$\texttt{ i P \_:blank }$>$
+$p_A(X) \rightarrow \exists Y~ p (X,Y)$ 
+	\\
+	
+	\hline	
+		%\cellcolor[gray]{0.7} 
+		$P_1 \sqsubseteq \exists P_2$		
+		&
+		%\cellcolor[gray]{0.7} 
+		$\forall X Y .(P_1(X,Y) \Rightarrow \exists Z. P_2(\pair{X,Y},Z)) $
+		&
+		%\cellcolor[gray]{0.7} 
+%%		if		$<$\texttt{ i $P_1$ j }$>$ \newline
+%%		then $<$\texttt{ [i,j] $P_2$ \_:blank }$>$*
+$(p_1(X,Y) \Rightarrow \exists Z~p_2(X,Y,Z)) $
+	\\
+	
+	\hline
+		$A \sqsubseteq \exists P^{-}$		
+		&
+		$\forall X .(A(X) \Rightarrow \exists Y. P(Y,X)) $
+		&
+%%		if $<$\texttt{ i rdf:type A}$>$ \newline
+%%		then $<$\texttt{ \_:blank P i }$>$
+$p_A(X) \Rightarrow \exists Y~p(Y,X)) $
+	\\
+	
+	\hline
+		%\cellcolor[gray]{0.9} 
+		$\exists P_1 \sqsubseteq \exists P_2$		
+		&
+		%cellcolor[gray]{0.9} 
+		$\forall X Y. (P_1(X,Y) \Rightarrow \exists Z .P_2(X,Z)) $ \newline
+		$\forall X Y W.(P_1(\pair{X,Y},W) \Rightarrow \exists Z. P_2(\pair{X,Y}, Z)) $
+		&
+		%\cellcolor[gray]{0.9} 
+%%		if $<$\texttt{ i $P_1$ j }$>$ \newline
+%%		then $<$\texttt{ i $P_2$ \_:blank }$>$ or \newline
+%%		
+%%		%\cellcolor[gray]{0.9} 
+%%		if $<$\texttt{ [i,j] $P_1$ k }$>$ \newline
+%%		then $<$ \texttt{[i,j] $P_2$ \_:blank }$>$
+$ (p_1(X,Y) \rightarrow \exists Z ~p_2(X,Z)) $ \newline
+		$p_1(X,Y,W) \rightarrow \exists Z~p_2(X,Y, Z)) $
+	\\
+	
+	\hline	
+		%\cellcolor[gray]{0.9} 
+		$\exists P_1\sqsubseteq \exists P^{-}$		
+		&
+		%\cellcolor[gray]{0.9} 
+		$\forall X Y. (P_1(X,Y) \Rightarrow \exists Z. P_2(Z,X)) $ \newline
+		$\forall X  Y. (P_1(X,Y) \Rightarrow \exists Z Z'. P_2(\pair{Z,Z'},X)) $
+		&
+		%\cellcolor[gray]{0.9} 
+%%		if $<$\texttt{ i R j }$>$ \newline
+%%		then $<$\texttt{ \_:blank P i }$>$ or \newline
+%%		
+%%		%\cellcolor[gray]{0.9} 
+%%		if $<$\texttt{ [i,j] R k }$>$ \newline
+%%		then $<$\texttt{ [\_:b1,\_:b2] P i }$>$
+		$ (p_1(X,Y) \Rightarrow \exists Z~ p_2(Z,X)) $ % \newline
+		$ (p_1(X,Y) \Rightarrow \exists Z Z'~p_2(Z,Z',X)) $
+
+	\\
+	
+	\hline
+		$P \sqsubseteq P_1^{-}$ or $P^{-} \sqsubseteq P_1$		
+		&
+		$\forall X Y. (P(X,Y) \Rightarrow P_1(Y,X)) $
+		&
+%%		$<$\texttt{P owl:inverseOf R}$>$
+$p(X,Y) \Rightarrow p_1(Y,X) $
+	\\
+	
+	\hline	
+		Negative inclusions & &
+	\\
+	
+	\hline
+		$A_1 \sqsubseteq \neg A_2$	
+		&
+		$\forall X. (A_1(X) \Rightarrow \neg A_2(X)) $
+		&
+%%		$<$\texttt{C owl:disjoinWith D} $>$
+$\ p_{A_1}(X) \Rightarrow \neg p_{A_2}(X)) $
+	\\
+	
+	\hline
+		%\cellcolor[gray]{0.9} 
+		$P_1 \sqsubseteq \neg P_2$	
+		&
+		%\cellcolor[gray]{0.9} 
+		$\forall X  Y. (P_1(X,Y) \Rightarrow \neg P_2(X,Y)) $ \newline
+		%\cellcolor[gray]{0.9} 
+		$\forall X  Y  Z.(P_1(\pair{X,Y},Z) \Rightarrow \neg P_2(\pair{X,Y},Z)) $
+		&
+		%\cellcolor[gray]{0.9} 
+%%		$<$\texttt{P owl:disjoinWith R} $>$
+$\ p_1(X,Y) \rightarrow \neg p_2(X,Y) $ \newline
+		%\cellcolor[gray]{0.9} 
+		$p_1(X,Y,Z) \rightarrow \neg p_2(X,Y,Z)) $
+	\\
+	
+	\hline
+		$P_1^{-} \sqsubseteq \neg P_2$	or $P_1 \sqsubseteq \neg P_2^{-}$
+		&
+		$\forall X Y .(P_1(X,Y) \Rightarrow \neg P_2(Y,X)) $
+		&
+		$p_1(X,Y) \Rightarrow \neg p_2(Y,X)$
+	\\
+	
+	\hline
+		$A \sqsubseteq \neg \exists P$
+		&
+		$\forall X. (A(X) \Rightarrow \neg \exists Y. P(X,Y)) $
+		&
+%%		if $<$\texttt{ i rdf:type C }$>$ \newline
+%%		then not $<$\texttt{ i P \_:blank }$>$
+$p_A(X) \Rightarrow \neg \exists Y~p(X,Y)) $
+	\\
+	
+	\hline
+		%\cellcolor[gray]{0.9} 
+		$A \sqsubseteq \neg \exists P^{-}$	
+		&
+		%\cellcolor[gray]{0.9} 
+		$\forall X. (A(X) \Rightarrow \neg \exists Y. P(Y,X)) $ \newline
+		%\cellcolor[gray]{0.9} 
+		$\forall X. (A(X) \Rightarrow \neg \exists Y Z. P(\pair{Y,Z},X)) $
+		&
+%%		if $<$\texttt{ i rdf:type C }$>$ \newline
+%%		then not $<$\texttt{ \_:blank P i }$>$ or \newline
+%%		
+%%		if $<$\texttt{ i rdf:type C }$>$ \newline
+%%		then not $<$\texttt{ [\_:b1,\_:b2] P i }$>$
+$p_A(X) \rightarrow \neg \exists Y~p(Y,X)) $ \newline
+		%\cellcolor[gray]{0.9} 
+		$p_A(X) \rightarrow \neg \exists Y Z~ p(Y,Z,X)) $
+	\\
+	
+	\hline
+		%\cellcolor[gray]{0.7} 
+		$P_1 \sqsubseteq \neg \exists P_2$	
+		&
+		%\cellcolor[gray]{0.7} 
+		$\forall X Y. (P_1(X,Y) \Rightarrow \neg \exists Z. P_2(\pair{X,Y},Z))$
+		&
+		$p_1(X,Y) \Rightarrow \neg \exists Z. p_2(X,Y,Z))$
+	\\
+	
+	\hline
+		%\cellcolor[gray]{0.9} 
+		$\exists P_1 \sqsubseteq \neg \exists P_2$	
+		&
+		%\cellcolor[gray]{0.9} 
+		$\forall X Y. (P_1(X,Y) \Rightarrow \neg \exists Z. P_2(X,Z)) $ \newline
+		%\cellcolor[gray]{0.9} 
+		$\forall X  Y Z .(P_1(\pair{X,Y},Z) \Rightarrow \neg \exists Z' . P_2(\pair{X,Y},Z'))$
+		&
+		$p_1(X,Y) \rightarrow \neg \exists Z~P_2(X,Z) $ \newline
+		%\cellcolor[gray]{0.9} 
+		$p_1(X,Y,Z) \rightarrow \neg \exists Z' ~p_2(X,Y,Z'))$
+	\\
+	
+	\hline
+		%\cellcolor[gray]{0.9} 
+		$\exists P_1 \sqsubseteq \neg \exists P_2^{-}$	
+		&
+		%\cellcolor[gray]{0.9} 
+		$\forall X  Y. (P_1(X,Y) \Rightarrow \neg \exists Z. P_2(Z,X)) $ \newline
+		%\cellcolor[gray]{0.9} 
+		$\forall X  Y. (P_1(X,Y) \Rightarrow \neg \exists Z  Z' . P_2(\pair{Z,Z'},X)) $
+		&
+		$p_1(X,Y) \rightarrow \neg \exists Z~ p_2(Z,X) $ \newline
+		%\cellcolor[gray]{0.9} 
+		$p_1(X,Y) \rightarrow \neg \exists Z  Z' ~p_2(Z,Z',X)) $
+	\\
+	
+	\hline
+		$\exists P \sqsubseteq \neg A$
+		&
+		$\forall X Y. (P(X,Y) \Rightarrow \neg A(X)) $
+		&
+%%		$<$ \texttt{P rdfs:domain B }$>$ \newline
+%%		$<$ \texttt{B owl:disjoinWith C }$>$
+$p(X,Y) \rightarrow \neg p_A(X) $
+	\\
+	
+	\hline
+		$\exists P^{-} \sqsubseteq \neg A$
+		&
+		$\forall X  Y. (P(X,Y) \Rightarrow \neg A(Y)) $
+		&
+%%		$<$ \texttt{P rdfs:range B }$>$ \newline
+%%		$<$ \texttt{B owl:disjoinWith D }$>$
+
+	$p(X,Y) \Rightarrow \neg p_A(Y)) $
+	\\
+	\hline
+	
+\end{longtable}
+
+
+\begin{example}
+Suppose an ABox with the following information concerning concepts Professor  and Course and the role Teaches.
+Its information is grafically shown in grapXXX
+
+\begin{center}
+Professor(Robert), Professor(Martin), Professor(Smith)\\
+Course(Math), Course(CS),
+Teaches(Robert, Math),  Teaches(Martin, Math), Teaches(Robert, CS),  Teaches(Smith, CS)
+\end{center}
+
+Courses have an attribute concerning the number of hours.
+We use the role Course$_{Hours}$  to represent it.
+
+\begin{center}
+ Course$_{Hours}$ (Math, 30),  Course$_{Hours}$(CS, 60),
+\end{center}
+
+The role Teaches has also an attribute which indicates the course level.
+
+\begin{center}
+Teaches$_{Level}$ (\pair{Robert, Math}, graduated), \\
+Teaches$_{Level}$(\pair{Martin, Math}, undergraduated), $\dots$
+\end{center}
+\end{example}

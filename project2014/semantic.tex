@@ -1,0 +1,259 @@
+\documentclass[]{article}
+\usepackage{hyperref}
+\usepackage[brazil]{babel}   
+\usepackage[utf8]{inputenc}
+\usepackage[portrait, hmargin=2cm,vmargin=2cm]{geometry}
+\usepackage{longtable}
+\usepackage[table]{xcolor}
+
+\begin{document}
+
+\begin{center}
+\LARGE
+DL extension - semantic
+\end{center}
+
+In the following table C and D are atomic concepts (unary predicates), P and R are atomic roles (binary predicates),  i and j and k are constants, and X, Y, Z and W are variables.
+
+\centering
+\begin{longtable}{| p{3.7cm} | p{7cm} | p{5.2cm} |}
+	\hline
+	\centering \textbf{DL} & \centering \textbf{FOL} & \centering \textbf{RDFS/OWL}
+	\\
+	\endfirsthead
+	\hline	
+	\centering \textbf{DL} & \centering \textbf{FOL} & \centering \textbf{RDFS/OWL}
+	\\
+	\endhead
+	
+	\hline
+		$i:C$ or $C(i)$
+		&
+		$C(i)$
+		&
+		$<$ \texttt{i rdf:type C} $>$
+	\\
+		
+	\hline
+		$i P j$ or $P(i,j)$
+		&
+		$P(i,j)$
+		&
+		$<$\texttt{ i P j }$>$
+	\\
+	
+	\hline
+		\cellcolor[gray]{0.9} $[i,j] P k$ or $P([i,j],k)$
+		&
+		\cellcolor[gray]{0.9} $P([i,j],k)$
+		&
+		\cellcolor[gray]{0.9} $<$\texttt{ [i,j] P k}$>$
+	\\
+	
+	\hline
+		$C \sqsubseteq D$	
+		&
+		$\forall X(C(X) \Rightarrow D(X))$
+		&
+		$<$\texttt{ C rdfs:subClassOf D }$>$
+	\\
+
+	\hline
+		\cellcolor[gray]{0.9} $P \sqsubseteq R$	
+		&
+		\cellcolor[gray]{0.9} $\forall X \forall Y (P(X,Y) \Rightarrow R(X,Y))$ or \newline
+		$\forall X \forall Y \forall Z (P([X,Y],Z) \Rightarrow R([X,Y],Z))$
+		&
+		\cellcolor[gray]{0.9} $<$\texttt{ P rdfs:subPropertyOf R}$>$
+	\\
+
+	\hline
+		$\exists P \sqsubseteq C$	
+		&
+		$\forall X \forall Y (P(X,Y) \Rightarrow C(X))$
+		&
+		$<$\texttt{ P rdfs:domain C }$>$
+	\\
+
+	\hline
+		\cellcolor[gray]{0.9} $\exists P^{-} \sqsubseteq D$	
+		&
+		\cellcolor[gray]{0.9} $\forall X \forall Y (P(X,Y) \Rightarrow D(Y))$ or \newline
+		$\forall X \forall Y \forall Z (P([X,Y],Z) \Rightarrow D(Z))$
+		&
+		\cellcolor[gray]{0.9} $<$\texttt{ P rdfs:range D }$>$
+	\\
+	
+	\hline
+		\cellcolor[gray]{0.7} $\exists P \sqsubseteq R$
+		&
+		\cellcolor[gray]{0.7} $\forall X \forall Y \forall Z (P([X,Y],Z) \Rightarrow R(X,Y))$
+		&
+		\cellcolor[gray]{0.7} $<$\texttt{ P rdfs:domain R }$>$*
+	\\
+
+	\hline
+		Positive inclusions & &
+	\\
+	
+	\hline
+		$C \sqsubseteq \exists P$		
+		&
+		$\forall X(C(X) \Rightarrow \exists Y P(X,Y)) $
+		&
+		if $<$\texttt{ i rdf:type C }$>$ \newline
+		then $<$\texttt{ i P \_:blank }$>$
+	\\
+	
+	\hline	
+		\cellcolor[gray]{0.7} $R \sqsubseteq \exists P$		
+		&
+		\cellcolor[gray]{0.7} $\forall X \forall Y (R(X,Y) \Rightarrow \exists Z P([X,Y],Z)) $
+		&
+		\cellcolor[gray]{0.7} if $<$\texttt{ i R j }$>$ \newline
+		then $<$\texttt{ [i,j] P \_:blank }$>$*
+	\\
+	
+	\hline
+		$C \sqsubseteq \exists P^{-}$		
+		&
+		$\forall X (C(X) \Rightarrow \exists Y P(Y,X)) $
+		&
+		if $<$\texttt{ i rdf:type C }$>$ \newline
+		then $<$\texttt{ \_:blank P i }$>$
+	\\
+	
+	\hline
+		\cellcolor[gray]{0.9} $\exists R \sqsubseteq \exists P$		
+		&
+		\cellcolor[gray]{0.9} $\forall X \forall Y (R(X,Y) \Rightarrow \exists Z P(X,Z)) $ \newline
+		$\forall X \forall Y \forall W(R([X,Y],W) \Rightarrow \exists Z P([X,Y]Z)) $
+		&
+		\cellcolor[gray]{0.9} if $<$\texttt{ i R j }$>$ \newline
+		then $<$\texttt{ i P \_:blank }$>$ or \newline
+		
+		\cellcolor[gray]{0.9} if $<$\texttt{ [i,j] R k }$>$ \newline
+		then $<$ \texttt{[i,j] P \_:blank }$>$
+	\\
+	
+	\hline	
+		\cellcolor[gray]{0.9} $\exists R \sqsubseteq \exists P^{-}$		
+		&
+		\cellcolor[gray]{0.9} $\forall X \forall Y (R(X,Y) \Rightarrow \exists Z P(Z,X)) $ \newline
+		$\forall X \forall Y (R(X,Y) \Rightarrow \exists Z \exists Z\prime P([Z,Z\prime]X)) $
+		&
+		\cellcolor[gray]{0.9} if $<$\texttt{ i R j }$>$ \newline
+		then $<$\texttt{ \_:blank P i }$>$ or \newline
+		
+		\cellcolor[gray]{0.9} if $<$\texttt{ [i,j] R k }$>$ \newline
+		then $<$\texttt{ [\_:b1,\_:b2] P i }$>$
+	\\
+	
+	\hline
+		$P \sqsubseteq R^{-}$ or $P^{-} \sqsubseteq R$		
+		&
+		$\forall X \forall Y (P(X,Y) \Rightarrow R(Y,X)) $
+		&
+		$<$\texttt{P owl:inverseOf R}$>$
+	\\
+	
+	\hline	
+		Negative inclusions & &
+	\\
+	
+	\hline
+		$C \sqsubseteq \neg D$	
+		&
+		$\forall X (C(X) \Rightarrow \neg D(X)) $
+		&
+		$<$\texttt{C owl:disjoinWith D} $>$
+	\\
+	
+	\hline
+		\cellcolor[gray]{0.9} $P \sqsubseteq \neg R$	
+		&
+		\cellcolor[gray]{0.9} $\forall X \forall Y (P(X,Y) \Rightarrow \neg R(X,Y)) $ \newline
+		\cellcolor[gray]{0.9} $\forall X \forall Y \forall Z(P([X,Y],Z) \Rightarrow \neg R([X,Y],Z)) $
+		&
+		\cellcolor[gray]{0.9} $<$\texttt{P owl:disjoinWith R} $>$
+	\\
+	
+	\hline
+		$P^{-} \sqsubseteq \neg R$	or $P \sqsubseteq \neg R^{-}$
+		&
+		$\forall X \forall Y (P(X,Y) \Rightarrow \neg R(Y,X)) $
+		&
+	\\
+	
+	\hline
+		$C \sqsubseteq \neg \exists P$
+		&
+		$\forall X (C(X) \Rightarrow \neg \exists Y P(X,Y)) $
+		&
+		if $<$\texttt{ i rdf:type C }$>$ \newline
+		then not $<$\texttt{ i P \_:blank }$>$
+	\\
+	
+	\hline
+		\cellcolor[gray]{0.9} $C \sqsubseteq \neg \exists P^{-}$	
+		&
+		\cellcolor[gray]{0.9} $\forall X (C(X) \Rightarrow \neg \exists Y P(Y,X)) $ \newline
+		\cellcolor[gray]{0.9} $\forall X (C(X) \Rightarrow \neg \exists Y \exists Z P([Y,Z],X)) $
+		&
+		if $<$\texttt{ i rdf:type C }$>$ \newline
+		then not $<$\texttt{ \_:blank P i }$>$ or \newline
+		
+		if $<$\texttt{ i rdf:type C }$>$ \newline
+		then not $<$\texttt{ [\_:b1,\_:b2] P i }$>$
+	\\
+	
+	\hline
+		\cellcolor[gray]{0.7} $R \sqsubseteq \neg \exists P$	
+		&
+		\cellcolor[gray]{0.7} $\forall X \forall Y (R(X,Y) \Rightarrow \neg \exists Z P([X,Y],Z))$
+		&
+	\\
+	
+	\hline
+		\cellcolor[gray]{0.9} $\exists R \sqsubseteq \neg \exists P$	
+		&
+		\cellcolor[gray]{0.9} $\forall X \forall Y (R(X,Y) \Rightarrow \neg \exists Z P(X,Z)) $ \newline
+		\cellcolor[gray]{0.9} $\forall X \forall Y \forall Z (R([X,Y],Z) \Rightarrow \neg \exists Z\prime P([X,Y],Z\prime))$
+		&
+	\\
+	
+	\hline
+		\cellcolor[gray]{0.9} $\exists R \sqsubseteq \neg \exists P^{-}$	
+		&
+		\cellcolor[gray]{0.9} $\forall X \forall Y (R(X,Y) \Rightarrow \neg \exists Z P(Z,X)) $ \newline
+		\cellcolor[gray]{0.9} $\forall X \forall Y (R(X,Y) \Rightarrow \neg \exists Z \exists Z\prime P([Z,Z\prime],X)) $
+		&
+	\\
+	
+	\hline
+		$\exists P \sqsubseteq \neg C$
+		&
+		$\forall X \forall Y (P(X,Y) \Rightarrow \neg C(X)) $
+		&
+		$<$ \texttt{P rdfs:domain B }$>$ \newline
+		$<$ \texttt{B owl:disjoinWith C }$>$
+	\\
+	
+	\hline
+		$\exists P^{-} \sqsubseteq \neg D$
+		&
+		$\forall X \forall Y (P(X,Y) \Rightarrow \neg D(Y)) $
+		&
+		$<$ \texttt{P rdfs:range B }$>$ \newline
+		$<$ \texttt{B owl:disjoinWith D }$>$
+	\\
+	
+	\hline
+	
+\end{longtable}
+
+
+%\bibliographystyle{plain}
+%\bibliography{comparacao}
+
+\end{document}
